@@ -6,39 +6,26 @@ import CartCard from '../../components/CardCard/CartCard';
 import {styles} from './CartScreenStyle';
 import { formatAmount } from '../../utils/utils';
 import {changeQuantity, placeOrder, resetOrderStatus} from '../../redux/action/action'
+import PriceCard from '../../components/PriceCard/PriceCard';
+import SuccessModal from '../../components/SuccessModal/SuccessModal';
+import CartEmpty from '../../components/CartEmpty/CartEmpty';
 
 class CartScreen extends Component {
-
 
   componentDidMount() {
     this.props.resetOrderStatus()
   }
 
-  changeQuantity = (index, type) => {
-    this.props.changeQuantity(index, type) 
-  }
+  changeQuantity = (index, type) => this.props.changeQuantity(index, type) 
+  
 
   renderPriceCard = () => {
     const {totalPrice, cartArr} = this.props;
-    return (
-      <View style={styles.priceCardOuterView}>
-        <Text style={styles.priceDetailsText}>PRICE DETAILS</Text>
-        <View style={styles.line}/>
-        <View style={styles.price}>
-            <Text>{`Price (${cartArr.length} Items)`}</Text>
-            <Text>{formatAmount(totalPrice)}</Text>
-        </View>
-        <View style={styles.deliveryFeeContainer}>
-            <Text>Delivery Fee</Text>
-            <Text style={styles.deliveryFeeValue}>FREE</Text>
-        </View>
-        <View style={styles.line}/>
-        <View style={styles.totalAmountContainer}>
-            <Text>Total Amount</Text>
-            <Text>{formatAmount(totalPrice)}</Text>
-        </View>
-        <View style={styles.line}/>
-      </View>
+    return(
+    <PriceCard
+      totalPrice={totalPrice}
+      cartArr={cartArr}
+    />
     )
   }
 
@@ -61,37 +48,35 @@ class CartScreen extends Component {
     this.props.placeOrder()
   }
 
-  renderEmptyView = () => (
-    <View style={styles.emptyView}>
-      <View style={styles.empty}/>
-      <Image source={require('../../assets/empty.png')}/>
-       <Text style={styles.emptyTitle}>Your Cart is Empty!</Text>
-       <Text style={styles.emptyDesc}>Add items to it now</Text>
-       <TouchableOpacity
-        style={
-          styles.shopNow}
-        onPress={() => this.props.navigation.goBack()}>
-        <Text style={styles.cartText}>Shop now</Text>
-      </TouchableOpacity>
-    </View>
-  )
+  renderEmptyView = () => <CartEmpty onPress={() => this.props.navigation.goBack()}/>
 
-  renderSuccessView = () => (
-    <View style={styles.successOuter}>
-      <View style={styles.empty}/>
-      <Image style={styles.successImg} source={require('../../assets/success.png')}/>
-       <Text style={styles.successText}>Your Order has been successfully placed</Text>
-       <Text style={styles.successDesc}>Thank you for shopping with us</Text>
-       <TouchableOpacity
-        style={
-          styles.shopNow}
-        onPress={() => {
-          this.props.resetOrderStatus()
-          this.props.navigation.goBack()}}>
-        <Text style={styles.cartText}>Shop now</Text>
-      </TouchableOpacity>
-    </View>
-  )
+  renderSuccessView = () => {
+    return (
+      <SuccessModal
+       onPress={this.onShopNowPress}
+      />
+    )
+  }
+
+  onShopNowPress = () => {
+    this.props.resetOrderStatus();
+    this.props.navigation.goBack();
+  }
+
+  renderSeperator = () => <View style={styles.seperator} />
+
+  renderItem = ({item, index}) => {
+    return (
+      <CartCard
+        item={item}
+        decreaseQuantity={() => this.changeQuantity(index, 'decrease')}
+        increaseQuantity={() => this.changeQuantity(index, 'increase')}
+        deleteCartItem={() => this.deleteCartItem(index)}
+      />
+    );
+  }
+
+  getKeyExtractor = (item, index) => `${item.description}${index.toString()}`
 
   render() {
     const {cartArr = [], orderStatus} = this.props;
@@ -107,18 +92,9 @@ class CartScreen extends Component {
           data={cartArr}
           extraData={cartArr.length}
           style={styles.listPadding}
-          keyExtractor={(item, index) => item && item.description}
-          renderItem={({item, index}) => {
-            return (
-              <CartCard
-                item={item}
-                decreaseQuantity={() => this.changeQuantity(index, 'decrease')}
-                increaseQuantity={() => this.changeQuantity(index, 'increase')}
-                deleteCartItem={() => this.deleteCartItem(index)}
-              />
-            );
-          }}
-          ItemSeparatorComponent={() => <View style={styles.seperator} />}
+          keyExtractor={this.getKeyExtractor}
+          renderItem={this.renderItem}
+          ItemSeparatorComponent={this.renderSeperator}
           ListFooterComponent={() => this.renderPriceCard()}
         />
         {this.renderFooterButton()}

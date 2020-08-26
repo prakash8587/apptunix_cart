@@ -1,24 +1,23 @@
-import React, {Component} from 'react';
+import React, { useEffect } from 'react';
 import {View, Image} from 'react-native';
-import {styles} from './SplashScreenStyle'
 import { StackActions, NavigationActions } from 'react-navigation';
-class SpalshScreen extends Component {
-
-  componentDidMount() {
-    this.navigateToProductScreen();
-  }
+import {styles} from './SplashScreenStyle'
+import { ROUTES } from '../../utils/Routes';
+const SplashScreen = (props) => {
+  useEffect(() => {
+    navigateToProductScreen()
+  })
 
   navigateToProductScreen = () => {
     setTimeout(() => {
         const resetAction = StackActions.reset({
             index: 0,
-            actions: [NavigationActions.navigate({ routeName: 'Product' })],
+            actions: [NavigationActions.navigate({ routeName: ROUTES.PRODUCT })],
         });
-        this.props.navigation.dispatch(resetAction)
+        props.navigation.dispatch(resetAction)
     }, 5000);
   };
 
-  render() {
     return (
       <View style={styles.container}>
         <Image
@@ -27,7 +26,6 @@ class SpalshScreen extends Component {
         />
       </View>
     );
-  }
 }
 
-export default SpalshScreen;
+export default  React.memo(SplashScreen);

@@ -4,12 +4,16 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
   },
-  listPadding: {padding: 16},
+  listPadding: {
+    padding: 16
+  },
   seperator: {
     height: 10,
     width: '100%'
   },
-  footer: {height: 60, width: '100%'},
+  footer: {
+    height: 60, width: '100%'
+  },
   cartView: {
     backgroundColor: '#fff',
     height: 70,
@@ -26,5 +30,8 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  cartText: {fontSize: 20, color: '#fff'},
+  cartText: {
+    fontSize: 20, 
+    color: '#fff'
+  }
 });

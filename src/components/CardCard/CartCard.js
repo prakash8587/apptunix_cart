@@ -1,10 +1,18 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { styles } from './CartCardStyle';
 import {formatAmount} from '../../utils/utils';
 
 const CartCard = (props) => {
+
   const { item = {} } = props;
+
+  const [count, setCount] = useState(item.count);
+
+  useEffect(() => {
+    setCount(item.count)
+  })
+
   return (
     <View style={[styles.maincontainer, Platform.OS === "android" ? styles.androidCard : styles.iosCard]}>
       <View style={styles.cartImgOuterView}>
@@ -17,14 +25,14 @@ const CartCard = (props) => {
             }}
           />
         )}
-      </View>
+      </View> 
       <View style={styles.priceAndQuantity}>
         <Text style={styles.cartPriceText}>{formatAmount(item.price)}</Text>
         <View style={styles.addDelete}>
           <TouchableOpacity
             style={
               styles.plusMinus}
-            onPress={props.decreaseQuantity}>
+              onPress={props.decreaseQuantity}>
               {item.count === 1 ?
                 <Image
                 source={require('../../assets/trash.png')}
@@ -34,7 +42,7 @@ const CartCard = (props) => {
             }
           </TouchableOpacity>
           <View style={styles.cartQuantityText}>
-            <Text>{item.count}</Text>
+            <Text>{count}</Text>
           </View>
           <TouchableOpacity
             style={styles.plusMinus}
@@ -47,4 +55,4 @@ const CartCard = (props) => {
   );
 };
 
-export default CartCard;
+export default React.memo(CartCard);
